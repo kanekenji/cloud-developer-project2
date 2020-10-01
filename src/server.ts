@@ -11,13 +11,30 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   const port = process.env.PORT || 8082;
   
   // Use the body parser middleware for post requests
+  
   app.use(bodyParser.json());
 
-  // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
-  // GET /filteredimage?image_url={{URL}}
-  // endpoint to filter an image from a public url.
-  // IT SHOULD
-  //    1
+
+  app.get("/filteredimage", async (req,res)=> {
+
+    const imageurl = req.query.image_url;
+
+    if (!imageurl){
+      return res.status(400).send({
+        message: "The image_url is required"
+      });
+    } 
+    try {
+      console;
+      const filterPath = await filterImageFromURL(imageurl);
+      res.sendFile(filterPath,() =>
+        deleteLocalFiles([filterPath])
+        );
+    } catch(error) {
+      res.sendStatus(422).send("Unable to process image")
+    }
+  });
+  
   //    1. validate the image_url query
   //    2. call filterImageFromURL(image_url) to filter the image
   //    3. send the resulting file in the response
